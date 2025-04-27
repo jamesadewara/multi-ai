@@ -1,0 +1,364 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 342 64% 34%; /* wine-700 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 346 83% 95%; /* light wine */
+    --accent-foreground: 342 64% 34%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 342 64% 34%;
+    --radius: 0.75rem;
+
+    /* Sidebar colors */
+    --sidebar-background: 342 64% 34%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 342 64% 34%;
+    --sidebar-accent: 346 83% 95%;
+    --sidebar-accent-foreground: 342 64% 34%;
+    --sidebar-border: 342 50% 44%;
+    --sidebar-ring: 342 64% 34%;
+  }
+
+  .dark {
+    --background: 222 47% 8%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 342 40% 50%; /* wine-600 */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 33% 18%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 342 38% 22%; /* dark wine */
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 342 40% 50%;
+
+    /* Sidebar colors */
+    --sidebar-background: 222 47% 12%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 342 40% 50%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 217 33% 23%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 47% 20%;
+    --sidebar-ring: 342 40% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    scroll-behavior: smooth;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  /* Glass morphism effect */
+  .glass-morphism {
+    @apply backdrop-blur-md bg-white/10 border border-white/20 shadow-lg;
+  }
+
+  /* Chat bubble styles */
+  .chat-bubble-user {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  .chat-bubble-ai {
+    @apply bg-card text-card-foreground border;
+  }
+
+  /* Gradient button */
+  .gradient-btn {
+    @apply bg-gradient-to-r from-wine-700 to-wine-600 hover:from-wine-600 hover:to-wine-500 text-white font-medium rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-lg;
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-muted/50;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-primary/40 hover:bg-primary/60 rounded-full;
+  }
+}
+
+/* Animations */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+@layer utilities {
+  .animate-blink {
+    animation: blink 1.4s infinite;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-fade-in {
+    @apply opacity-0 translate-y-4 transition-all duration-700 ease-out;
+    animation: fadeIn 0.5s forwards;
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.1) 8%,
+      rgba(255, 255, 255, 0.2) 18%,
+      rgba(255, 255, 255, 0.1) 33%
+    );
+    background-size: 800px 104px;
+    animation: shimmer 1.5s infinite linear;
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Background gradient */
+.bg-gradient-radial {
+  background: radial-gradient(
+    circle at center,
+    var(--tw-gradient-from) 0%,
+    var(--tw-gradient-to) 100%
+  );
+}
+
+.bg-gradient-wine {
+  background: linear-gradient(135deg, #8e2140 0%, #b03054 100%);
+}
+
+.bg-gradient-wine-gold {
+  background: linear-gradient(135deg, #8e2140 0%, #e6c054 100%);
+}
+
+.bg-gradient-wine-teal {
+  background: linear-gradient(135deg, #8e2140 0%, #2ce2d1 100%);
+}
+
+.bg-gradient-wine-lavender {
+  background: linear-gradient(135deg, #8e2140 0%, #c2b3ff 100%);
+}
+
+/* Interactive animation classes */
+.hover-scale {
+  @apply transition-transform duration-300 hover:scale-105;
+}
+
+.hover-lift {
+  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+}
+
+.hover-glow {
+  @apply transition-all duration-300;
+  box-shadow: 0 0 0 rgba(142, 33, 64, 0);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(142, 33, 64, 0.5);
+}
+
+/* Wine-inspired scrollbar (for Firefox) */
+* {
+  scrollbar-color: rgba(176, 48, 84, 0.5) rgba(176, 48, 84, 0.1);
+  scrollbar-width: thin;
+}
+
+
+.full-transparent {
+  background: transparent;
+  border: 0px;
+}
+
+.bg-clip-text {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.markdown-body {
+  /* Base styles */
+  line-height: 1.6;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.markdown-body h1 {
+  font-size: 1.5em;
+}
+
+.markdown-body h2 {
+  font-size: 1.25em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.markdown-body h3 {
+  font-size: 1.125em;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 1.5em;
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+}
+
+.markdown-body ul {
+  list-style-type: disc;
+}
+
+.markdown-body ol {
+  list-style-type: decimal;
+}
+
+.markdown-body li {
+  margin-bottom: 0.25em;
+}
+
+.markdown-body p {
+  margin-bottom: 1em;
+}
+
+.markdown-body img {
+  max-width: 100%;
+  border-radius: 0.375rem;
+}
+
+.markdown-body pre {
+  margin-bottom: 1em;
+  border-radius: 0.375rem;
+  overflow: auto;
+}
+
+.markdown-body code {
+  padding: 0.2em 0.4em;
+  background-color: hsl(var(--muted));
+  border-radius: 3px;
+  font-size: 0.875em;
+}
+
+.markdown-body pre code {
+  padding: 0;
+  background-color: transparent;
+  border-radius: 0;
+  font-size: 1em;
+}
+
+.markdown-body table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.markdown-body table tr:nth-child(2n) {
+  background-color: hsl(var(--muted));
+}
+
+.markdown-body hr {
+  height: 1px;
+  margin: 1.5em 0;
+  background-color: hsl(var(--border));
+  border: none;
+}
+
+/* Dark mode adjustments */
+:is(.dark) .markdown-body pre {
+  background-color: hsl(var(--muted));
+}
+
+:is(.dark) .markdown-body table tr:nth-child(2n) {
+  background-color: hsl(var(--muted)/0.3);
+}
+
+/* For checkboxes in task lists */
+.markdown-body input[type="checkbox"] {
+  margin-right: 0.5em;
+}
