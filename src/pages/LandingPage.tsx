@@ -85,7 +85,7 @@ export default function LandingPage() {
       <header
         ref={headerRef}
         className={cn(
-          "border-b py-4 px-4 sticky top-0 z-50 transition-all duration-300",
+          "pb-4 py-4 px-4 border-b sticky top-0 z-50 transition-all duration-300",
           isScrolled ? "bg-background/80 backdrop-blur-sm shadow-sm" : "bg-transparent",
           headerInView && "animate-fade-in"
         )}

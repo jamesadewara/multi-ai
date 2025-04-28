@@ -1,5 +1,3 @@
-// types/chat.ts
-
 export interface AIModel {
   id: string;
   name: string;
@@ -10,18 +8,19 @@ export interface AIModel {
   color: string;
 }
 
-export interface MediaItem {
+export interface MediaReference {
+  id: string;
   name: string;
   type: string;
-  dataUrl: string;
+  cacheId: string; // Reference to IndexedDB cache
 }
 
 export interface ChatMessage {
   id: string;
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "system";
   content: string;
   timestamp: Date;
-  media?: MediaItem[];
+  media?: MediaReference[]; // Changed from dataUrl to reference
 }
 
 export interface Conversation {

@@ -1,8 +1,9 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { AIModel, ChatMessage, Conversation } from "@/types/chat";
+import { AIModel, ChatMessage, Conversation, MediaReference } from "@/types/chat";
 import { useAuth } from "./auth-context";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from 'uuid';
+import { mediaCacheService } from "@/lib/media-cache-service";
 
 // Mock AI models
 export const AI_MODELS: AIModel[] = [
@@ -97,6 +98,7 @@ interface ChatContextType {
   deleteMessage: (id: string) => void;
   updateMessage: (id: string, content: string) => void;
   setOptimizeMediaUploads: (value: boolean) => void;
+  getMediaDataUrl: (mediaRef: MediaReference) => Promise<string>;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -175,80 +177,177 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [conversations, user]);
 
-    // Process media files function
-    const processMediaFiles = async (files: File[]): Promise<{id: string, name: string, type: string, dataUrl: string}[]> => {
-      const results = [];
-      const GB = 1024 * 1024 * 1024;
-      
-      // Process files sequentially to avoid memory overload
-      for (const file of files) {
-        try {
-          if (file.size > maxFileSize) {
-            const sizeInGB = (file.size / GB).toFixed(2);
-            toast.error(`File too large (${sizeInGB}GB)`);
-            continue;
-          }
-    
-          // Process in chunks for large files
-          const result = await new Promise<{id: string, name: string, type: string, dataUrl: string}>((resolve, reject) => {
-            const fileId = uuidv4();
-            const chunkSize = 5 * 1024 * 1024; // 5MB chunks
-            const chunks = Math.ceil(file.size / chunkSize);
-            let currentChunk = 0;
-            let completeData = '';
-    
-            const processChunk = (chunkStart: number) => {
-              const chunkEnd = Math.min(chunkStart + chunkSize, file.size);
-              const chunk = file.slice(chunkStart, chunkEnd);
-              const chunkReader = new FileReader();
-    
-              chunkReader.onload = (e) => {
-                if (!e.target?.result) {
-                  reject(new Error('Chunk read failed'));
-                  return;
-                }
-    
-                completeData += (e.target.result as string).split(',')[1];
-                currentChunk++;
-    
-                if (currentChunk < chunks) {
-                  // Process next chunk
-                  setTimeout(() => processChunk(currentChunk * chunkSize), 0);
-                } else {
-                  // All chunks processed
-                  resolve({
-                    id: fileId,
-                    name: file.name,
-                    type: file.type,
-                    dataUrl: `data:${file.type};base64,${completeData}`
-                  });
-                }
-              };
-    
-              chunkReader.onerror = () => {
-                reject(new Error('Failed to read chunk'));
-              };
-    
-              chunkReader.readAsDataURL(chunk);
-            };
-    
-            // Start processing first chunk
-            processChunk(0);
-          });
-    
-          results.push(result);
-        } catch (error) {
-          console.error(`Error processing file ${file.name}:`, error);
-          toast.error(`Failed to process ${file.name}`);
-        }
-      }
-      
-      return results;
-    };
-    
+  // Modified to store media files in IndexedDB instead of localStorage
+  const processMediaFiles = async (files: File[]): Promise<MediaReference[]> => {
+    const results = [];
+    const GB = 1024 * 1024 * 1024;
 
+    // Make sure service is initialized
+    await mediaCacheService.isAvailable();
+
+    // Add debug logging
+    console.log(`Processing ${files.length} media files...`);
+
+    // Process files sequentially to avoid memory overload
+    for (const file of files) {
+      try {
+        if (file.size > maxFileSize) {
+          const sizeInGB = (file.size / GB).toFixed(2);
+          toast.error(`File too large (${sizeInGB}GB)`);
+          continue;
+        }
+
+        // Generate a consistent ID for this file
+        const fileId = uuidv4();
+        console.log(`Processing file ${file.name} with ID ${fileId}`);
+
+        // For smaller files, use a simpler approach
+        if (file.size < 5 * 1024 * 1024) { // Less than 5MB
+          const reader = new FileReader();
+          const dataUrl = await new Promise<string>((resolve, reject) => {
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.onerror = (e) => reject(new Error('Failed to read file'));
+            reader.readAsDataURL(file);
+          });
+
+          // Store in cache
+          await mediaCacheService.saveMedia({
+            id: fileId,
+            name: file.name,
+            type: file.type,
+            dataUrl
+          });
+
+          results.push({
+            id: fileId,
+            name: file.name,
+            type: file.type,
+            cacheId: fileId
+          });
+
+          console.log(`Successfully processed small file: ${file.name}`);
+          continue;
+        }
+
+        // For larger files, use chunking approach
+        const result = await new Promise<{ id: string, name: string, type: string, dataUrl: string }>((resolve, reject) => {
+          const chunkSize = 2 * 1024 * 1024; // 2MB chunks (smaller for better reliability)
+          const chunks = Math.ceil(file.size / chunkSize);
+          let currentChunk = 0;
+          let completeData = '';
+
+          console.log(`Processing ${file.name} in ${chunks} chunks`);
+
+          const processChunk = (chunkStart: number) => {
+            const chunkEnd = Math.min(chunkStart + chunkSize, file.size);
+            const chunk = file.slice(chunkStart, chunkEnd);
+            const chunkReader = new FileReader();
+
+            chunkReader.onload = (e) => {
+              if (!e.target?.result) {
+                reject(new Error('Chunk read failed'));
+                return;
+              }
+
+              const base64Data = (e.target.result as string).split(',')[1];
+              completeData += base64Data;
+              currentChunk++;
+
+              console.log(`Processed chunk ${currentChunk}/${chunks} for ${file.name}`);
+
+              if (currentChunk < chunks) {
+                // Process next chunk
+                setTimeout(() => processChunk(currentChunk * chunkSize), 0);
+              } else {
+                // All chunks processed
+                console.log(`All chunks processed for ${file.name}`);
+                resolve({
+                  id: fileId,
+                  name: file.name,
+                  type: file.type,
+                  dataUrl: `data:${file.type};base64,${completeData}`
+                });
+              }
+            };
+
+            chunkReader.onerror = () => {
+              reject(new Error('Failed to read chunk'));
+            };
+
+            chunkReader.readAsDataURL(chunk);
+          };
+
+          // Start processing first chunk
+          processChunk(0);
+        });
+
+        // Store in cache
+        await mediaCacheService.saveMedia(result);
+
+        // Add to results
+        results.push({
+          id: fileId,
+          name: result.name,
+          type: result.type,
+          cacheId: fileId
+        });
+
+        console.log(`Successfully processed file: ${file.name}`);
+
+      } catch (error) {
+        console.error(`Error processing file ${file.name}:`, error);
+        toast.error(`Failed to process ${file.name}`);
+      }
+    }
+
+    console.log(`Successfully processed ${results.length} out of ${files.length} files`);
+    return results;
+  };
+
+  // function to get media data URL from cache
+  const getMediaDataUrl = async (mediaRef: MediaReference): Promise<string> => {
+    try {
+      if (!mediaRef || !mediaRef.id) {
+        console.error('Invalid media reference:', mediaRef);
+        toast.error('Invalid media reference');
+        return '';
+      }
+  
+      console.log(`Fetching media: ${mediaRef.name} (ID: ${mediaRef.id})`);
+  
+      const cacheId = mediaRef.cacheId || mediaRef.id;
+      console.log('Attempting to fetch from cache with ID:', cacheId);
+  
+      const cachedMedia = await mediaCacheService.getMedia(cacheId);
+  
+      if (cachedMedia) {
+        console.log('Fetched from cache:', cachedMedia);
+      } else {
+        console.warn('No cache found for ID:', cacheId);
+      }
+  
+      if (cachedMedia?.dataUrl) {
+        console.log(`Media found for ${mediaRef.name}`);
+        console.log(cachedMedia.dataUrl);
+        return cachedMedia.dataUrl;
+      }
+  
+      console.error(`Media not found in cache: ${mediaRef.name} (ID: ${cacheId})`);
+      toast.error(`Media unavailable: ${mediaRef.name}`, {
+        description: "The file couldn't be loaded from storage"
+      });
+      return '';
+    } catch (error) {
+      console.error(`Error retrieving media ${mediaRef?.name}:`, error);
+      toast.error('Failed to load media', {
+        description: error instanceof Error ? error.message : 'Unknown error'
+      });
+      return '';
+    }
+  };
+  
   // Generate an AI response
-  const generateResponse = async (userInput: string, media?: { name: string, type: string, dataUrl: string }[]): Promise<string> => {
+  const generateResponse = async (userInput: string, media?: MediaReference[]): Promise<string> => {
     // Simulate network delay
     const delay = Math.random() * 1000 + 1000;
     await new Promise(resolve => setTimeout(resolve, delay));
@@ -264,6 +363,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       return `I've received your message along with ${media.length} ${media.length === 1 ? 'file' : 'files'} (${fileTypes}). As ${selectedModel.name}, I'll analyze both your text and the uploaded content. What would you like me to help you with regarding these files?`;
     }
 
+    // Your existing response logic
     if (greetings.some(g => lowerInput.includes(g))) {
       return `Hello! How can I assist you today as ${selectedModel.name}?`;
     } else if (lowerInput.includes("name")) {
@@ -294,8 +394,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     };
 
     setConversations(prev => [newConversation, ...prev]);
-    setCurrentConversationId(newConversation.id); // This line is crucial
+    setCurrentConversationId(newConversation.id);
   };
+
   // Load an existing conversation
   const loadConversation = (conversationId: string) => {
     const conversation = conversations.find(c => c.id === conversationId);
@@ -324,7 +425,6 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         createNewConversation();
       }
     }
-
   };
 
   // Handle model change
@@ -491,6 +591,15 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
+  // Periodically clean up old media files (run once a day)
+  useEffect(() => {
+    const cleanupInterval = setInterval(() => {
+      mediaCacheService.clearOldMedia(7); // Clear files older than 7 days
+    }, 24 * 60 * 60 * 1000); // Run once a day
+
+    return () => clearInterval(cleanupInterval);
+  }, []);
+
   const value = {
     conversations,
     currentConversationId,
@@ -498,7 +607,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     selectedModel,
     isProcessing,
     messages,
-    maxFileSize, 
+    maxFileSize,
     optimizeMediaUploads,
     setSelectedModel: handleModelChange,
     sendMessage,
@@ -507,7 +616,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     deleteConversation,
     deleteMessage,
     updateMessage,
-    setOptimizeMediaUploads
+    setOptimizeMediaUploads,
+    getMediaDataUrl
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
