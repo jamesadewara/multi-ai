@@ -50,8 +50,8 @@ A premium web application template for creating sophisticated multi-AI chatbot i
 
 1. Clone this repository
 ```bash
-git clone https://github.com/your-username/multi-ai-chat.git
-cd multi-ai-chat
+git clone https://github.com/jamesadewara/multi-ai.git
+cd multi-ai
 ```
 
 2. Install dependencies

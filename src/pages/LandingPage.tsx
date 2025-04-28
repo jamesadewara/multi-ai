@@ -90,8 +90,8 @@ export default function LandingPage() {
           headerInView && "animate-fade-in"
         )}
       >
-        <div className="container mx-auto max-w-7xl flex items-center justify-between">
-          <div className="flex items-center animate-fade-in [animation-delay:200ms]">
+        <div className="container pb-4 py-4 mx-auto max-w-7xl flex items-center justify-between">
+          <div className="flex items-center animate-fade-in delay-200">
             <img
               src="/images/multi-ai.png"
               alt="MultiAI Logo"
@@ -101,85 +101,9 @@ export default function LandingPage() {
           </div>
 
           {isMobile ? (
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[300px]">
-                <ScrollArea className="flex-1">
-                  <nav className="flex flex-col space-y-4 mt-8 space-y-1">
-                    <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">
-                      Features
-                    </a>
-                    <a href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors">
-                      How It Works
-                    </a>
-                    <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">
-                      Pricing
-                    </a>
-
-                    {/* Mobile dropdown sections */}
-                    <div className="space-y-2 pt-2">
-                      <p className="text-sm font-medium text-muted-foreground">Resources</p>
-                      {navigationItems.resources.map(item => (
-                        <a
-                          key={item.href}
-                          href={item.href}
-                          className="block text-sm px-2 py-1 hover:text-primary"
-                        >
-                          {item.label}
-                        </a>
-                      ))}
-                    </div>
-
-                    <div className="space-y-2 pt-2">
-                      <p className="text-sm font-medium text-muted-foreground">Community</p>
-                      {navigationItems.community.map(item => (
-                        <a
-                          key={item.href}
-                          href={item.href}
-                          className="block text-sm px-2 py-1 hover:text-primary"
-                        >
-                          {item.label}
-                        </a>
-                      ))}
-                    </div>
-
-                    <div className="space-y-2 pt-2">
-                      <p className="text-sm font-medium text-muted-foreground">Company</p>
-                      {navigationItems.company.map(item => (
-                        <a
-                          key={item.href}
-                          href={item.href}
-                          className="block text-sm px-2 py-1 hover:text-primary"
-                        >
-                          {item.label}
-                        </a>
-                      ))}
-                    </div>
-
-                    <div className="space-y-2 pt-2">
-                      <p className="text-sm font-medium text-muted-foreground">Products</p>
-                      {navigationItems.products.map(item => (
-                        <a
-                          key={item.href}
-                          href={item.href}
-                          className="block text-sm px-2 py-1 hover:text-primary"
-                        >
-                          {item.label}
-                        </a>
-                      ))}
-                    </div>
-                  </nav>
-                </ScrollArea>
-              </SheetContent>
-            </Sheet>
+            <></>
           ) : (
-            <nav className="hidden md:flex items-center space-x-6 animate-fade-in [animation-delay:400ms]">
-
-              {/* Dropdown menus */}
+            <nav className="hidden md:flex items-center space-x-6 animate-fade-in delay-400">
               <NavDropdown label="Resources" items={navigationItems.resources} />
               <NavDropdown label="Community" items={navigationItems.community} />
               <NavDropdown label="Company" items={navigationItems.company} />
@@ -187,17 +111,55 @@ export default function LandingPage() {
             </nav>
           )}
 
-          <div className="flex items-center space-x-4 animate-fade-in [animation-delay:600ms]">
+          <div className="flex items-center space-x-2 animate-fade-in delay-600">
             <ThemeToggle />
-
-
-            <Button className="bg-gradient-wine hover-scale " onClick={handleSignup}>
+            <Button className="bg-gradient-wine hover-scale" onClick={handleSignup}>
               {isAuthenticated ? "Go to Chat" : "Sign Up Free"}
             </Button>
+            {isMobile ? (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[300px]">
+                  <ScrollArea className="flex-1">
+                    <nav className="flex flex-col mt-8 space-y-4">
+                      <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">
+                        Features
+                      </a>
+                      <a href="#how-it-works" className="text-sm font-medium hover:text-primary transition-colors">
+                        How It Works
+                      </a>
+                      <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">
+                        Pricing
+                      </a>
 
+                      {/* Mobile dropdown sections */}
+                      {["resources", "community", "company", "products"].map((section) => (
+                        <div key={section} className="space-y-2 pt-2">
+                          <p className="text-sm font-medium text-muted-foreground capitalize">{section}</p>
+                          {navigationItems[section as keyof typeof navigationItems].map(item => (
+                            <a
+                              key={item.href}
+                              href={item.href}
+                              className="block text-sm px-2 py-1 hover:text-primary"
+                            >
+                              {item.label}
+                            </a>
+                          ))}
+                        </div>
+                      ))}
+                    </nav>
+                  </ScrollArea>
+                </SheetContent>
+              </Sheet>)
+              : <></>}
           </div>
         </div>
       </header>
+
 
       <main className="flex-1">
         <HeroSection />
