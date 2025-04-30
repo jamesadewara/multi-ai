@@ -95,10 +95,10 @@ export function ChatSidebar({ isOpen = true, onCollapse }: ChatSidebarProps) {
                 key={conversation.id}
                 onClick={() => loadConversation(conversation.id)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors",
+                  "flex items-center  gap-3 px-3 py-2 rounded-md cursor-pointer transition-colors",
                   conversation.id === currentConversationId
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                    : "hover:bg-sidebar-accent/50 text-sidebar-foreground/90"
+                    ? "bg-sidebar-accent sidebar-accent-foreground"
+                    : "hover:bg-sidebar-accent/50 text-sidebar-foreground"
                 )}
               >
                 <Avatar className="h-6 w-6 flex-shrink-0">
@@ -109,18 +109,18 @@ export function ChatSidebar({ isOpen = true, onCollapse }: ChatSidebarProps) {
                 </Avatar>
                 <div className="flex-1 truncate">
                   <div className="flex justify-between items-start">
-                    <p className="truncate text-sm font-medium">
+                    <p className="truncate text-sm font-medium text-sidebar-primary-foreground">
                       {conversation.title || "New Conversation"}
                     </p>
                   </div>
-                  <p className="text-xs text-sidebar-foreground/70 truncate">
+                  <p className="text-xs text-foreground truncate">
                     {formatDistanceToNow(new Date(conversation.updatedAt), { addSuffix: true })}
                   </p>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/80"
+                  className="h-6 w-6 text-foreground hover:text-sidebar-primary-foreground hover:bg-sidebar-accent/80"
                   onClick={(e) => handleDeleteClick(e, conversation.id)}
                 >
                   <Trash2 className="h-4 w-4" />

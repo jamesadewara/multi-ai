@@ -416,7 +416,7 @@ export function ChatMessage({
           >
             <div className="p-1">
               <button
-                className="relative flex w-full items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-muted/50"
+                className="relative flex w-full items-center text-foreground rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-muted/50"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleCopy();
@@ -427,7 +427,7 @@ export function ChatMessage({
               </button>
               {isUser && (
                 <button
-                  className="relative flex w-full items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-muted/50"
+                  className="relative flex w-full text-foreground items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-muted/50"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleEdit();

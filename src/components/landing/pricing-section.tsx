@@ -155,7 +155,7 @@ export function PricingSection() {
                   "mt-auto w-full", 
                   tier.highlighted 
                     ? "bg-gradient-wine hover:bg-gradient-wine-gold transition-all duration-300"
-                    : "bg-secondary hover:bg-secondary/90"
+                    : "bg-secondary text-foreground hover:bg-secondary/90"
                 )}
               >
                 {tier.buttonText}

@@ -85,12 +85,12 @@ export default function LandingPage() {
       <header
         ref={headerRef}
         className={cn(
-          "pb-4 py-4 px-4 border-b sticky top-0 z-50 transition-all duration-300",
+          "pb-4 py-4 px-4 fixed w-full border-b  top-0 z-50 transition-all duration-300",
           isScrolled ? "bg-background/80 backdrop-blur-sm shadow-sm" : "bg-transparent",
           headerInView && "animate-fade-in"
         )}
       >
-        <div className="container pb-4 py-4 mx-auto max-w-7xl flex items-center justify-between">
+        <div className="container mx-auto max-w-7xl flex items-center justify-between">
           <div className="flex items-center animate-fade-in delay-200">
             <img
               src="/images/multi-ai.png"
@@ -112,7 +112,7 @@ export default function LandingPage() {
           )}
 
           <div className="flex items-center space-x-2 animate-fade-in delay-600">
-            <ThemeToggle />
+
             <Button className="bg-gradient-wine hover-scale" onClick={handleSignup}>
               {isAuthenticated ? "Go to Chat" : "Sign Up Free"}
             </Button>
@@ -124,6 +124,7 @@ export default function LandingPage() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[300px]">
+                <ThemeToggle />
                   <ScrollArea className="flex-1">
                     <nav className="flex flex-col mt-8 space-y-4">
                       <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">
@@ -155,7 +156,7 @@ export default function LandingPage() {
                   </ScrollArea>
                 </SheetContent>
               </Sheet>)
-              : <></>}
+              : <ThemeToggle />}
           </div>
         </div>
       </header>

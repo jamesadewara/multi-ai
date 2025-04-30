@@ -73,7 +73,7 @@ export function ChatInterface({ openSidebar }: ChatInterfaceProps) {
           <></>
         )}
 
-        <h2 className="text-lg sm:text-xl font-semibold">Chat with MULTI-AI</h2>
+        <h2 className="text-lg sm:text-xl font-semibold">MULTI-AI</h2>
         <AISelector
           models={aiModels}
           selectedModel={selectedModel}

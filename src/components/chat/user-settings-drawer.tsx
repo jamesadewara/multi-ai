@@ -23,7 +23,7 @@ export function UserSettingsDrawer({ isMini }: UserSettingsDrawerProp) {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <div className="flex items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded-md transition-colors">
+        <div className="flex items-center gap-2 cursor-pointer hover:bg-gradient-wine hover:hover-lift p-2 rounded-md transition-colors">
           <Avatar className="h-8 w-8">
             <AvatarImage src={user.avatar} />
             <AvatarFallback className="bg-primary text-primary-foreground">
@@ -35,7 +35,7 @@ export function UserSettingsDrawer({ isMini }: UserSettingsDrawerProp) {
             !isMini ?
               <div className="">
                 <p className="text-sm font-medium">{user.name}</p>
-                <p className="text-xs text-muted-foreground">{user.email}</p>
+                <p className="text-xs foreground">{user.email}</p>
               </div>
               : <></>
           }
