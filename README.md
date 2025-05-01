@@ -34,10 +34,10 @@ A premium web application template for creating sophisticated multi-AI chatbot i
 ## 🖼️ Screenshots
 
 <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-  <img src="https://via.placeholder.com/350x200" alt="Landing Page" width="45%">
-  <img src="https://via.placeholder.com/350x200" alt="Chat Interface" width="45%">
-  <img src="https://via.placeholder.com/350x200" alt="Signup/Login" width="45%">
-  <img src="https://via.placeholder.com/350x200" alt="Settings Panel" width="45%">
+  <img src="screenshots/chatbot--ui/light-mode/mobile/landing-page-1.png" alt="Landing Page" width="45%">
+  <img src="screenshots/chatbot--ui/dark-mode/mobile/Screenshot from 2025-04-30 20-42-19.png" alt="Chat Interface" width="45%">
+  <img src="screenshots/chatbot--ui/light-mode/mobile/signup.png" alt="Signup/Login" width="45%">
+  <img src="screenshots/chatbot--ui/dark-mode/mobile/Screenshot from 2025-04-30 20-42-32.png" alt="Settings Panel" width="45%">
 </div>
 
 ## 🚀 Getting Started

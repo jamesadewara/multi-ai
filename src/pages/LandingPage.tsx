@@ -87,11 +87,11 @@ export default function LandingPage() {
         className={cn(
           "pb-4 py-4 px-4 fixed w-full border-b  top-0 z-50 transition-all duration-300",
           isScrolled ? "bg-background/80 backdrop-blur-sm shadow-sm" : "bg-transparent",
-          headerInView && "animate-fade-in"
+          headerInView && "animate-fade-in delay-100"
         )}
       >
         <div className="container mx-auto max-w-7xl flex items-center justify-between">
-          <div className="flex items-center animate-fade-in delay-200">
+          <div className="flex items-center">
             <img
               src="/images/multi-ai.png"
               alt="MultiAI Logo"
@@ -103,7 +103,7 @@ export default function LandingPage() {
           {isMobile ? (
             <></>
           ) : (
-            <nav className="hidden md:flex items-center space-x-6 animate-fade-in delay-400">
+            <nav className="hidden md:flex items-center space-x-6">
               <NavDropdown label="Resources" items={navigationItems.resources} />
               <NavDropdown label="Community" items={navigationItems.community} />
               <NavDropdown label="Company" items={navigationItems.company} />
@@ -111,7 +111,7 @@ export default function LandingPage() {
             </nav>
           )}
 
-          <div className="flex items-center space-x-2 animate-fade-in delay-600">
+          <div className="flex items-center space-x-2">
 
             <Button className="bg-gradient-wine hover-scale" onClick={handleSignup}>
               {isAuthenticated ? "Go to Chat" : "Sign Up Free"}
